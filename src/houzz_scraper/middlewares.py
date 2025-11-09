@@ -4,9 +4,8 @@ This module contains spider and downloader middleware for customizing
 the behavior of the Houzz spider.
 """
 
-from typing import Iterator
+from collections.abc import Iterator
 
-from itemadapter import ItemAdapter, is_item
 from scrapy import signals
 from scrapy.http import Request, Response
 
@@ -32,9 +31,7 @@ class HouzzSpiderMiddleware:
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)  # type: ignore
         return s
 
-    def process_spider_input(
-        self, response: Response, spider: object
-    ) -> None:  # type: ignore
+    def process_spider_input(self, response: Response, spider: object) -> None:  # type: ignore
         """Process responses going through the spider.
 
         Args:
@@ -47,7 +44,10 @@ class HouzzSpiderMiddleware:
         return None
 
     def process_spider_output(
-        self, response: Response, result: Iterator, spider: object  # type: ignore
+        self,
+        response: Response,
+        result: Iterator,
+        spider: object,  # type: ignore
     ) -> Iterator:  # type: ignore
         """Process the results returned from the spider.
 
@@ -59,8 +59,7 @@ class HouzzSpiderMiddleware:
         Yields:
             Request or item objects from the result iterator.
         """
-        for i in result:
-            yield i
+        yield from result
 
     def process_spider_exception(
         self, response: Response, exception: Exception, spider: object
@@ -89,8 +88,7 @@ class HouzzSpiderMiddleware:
         Yields:
             Request objects from the start_requests iterator.
         """
-        for r in start_requests:
-            yield r
+        yield from start_requests
 
     def spider_opened(self, spider: object) -> None:  # type: ignore
         """Handle spider opened signal.
@@ -98,7 +96,7 @@ class HouzzSpiderMiddleware:
         Args:
             spider: The spider that was opened.
         """
-        spider.logger.info("Spider opened: %s" % spider.name)  # type: ignore
+        spider.logger.info(f"Spider opened: {spider.name}")  # type: ignore
 
 
 class HouzzDownloaderMiddleware:
@@ -122,9 +120,7 @@ class HouzzDownloaderMiddleware:
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)  # type: ignore
         return s
 
-    def process_request(
-        self, request: Request, spider: object
-    ) -> None:  # type: ignore
+    def process_request(self, request: Request, spider: object) -> None:  # type: ignore
         """Process requests going through the downloader.
 
         Args:
@@ -172,4 +168,4 @@ class HouzzDownloaderMiddleware:
         Args:
             spider: The spider that was opened.
         """
-        spider.logger.info("Spider opened: %s" % spider.name)  # type: ignore
+        spider.logger.info(f"Spider opened: {spider.name}")  # type: ignore

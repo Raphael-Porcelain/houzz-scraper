@@ -4,8 +4,6 @@ This module contains pipelines that can be used to process items
 scraped by the Houzz spider.
 """
 
-from itemadapter import ItemAdapter
-
 
 class HouzzPipeline:
     """Pipeline for processing Houzz scraped items.
@@ -14,9 +12,7 @@ class HouzzPipeline:
     or storage operations on scraped items.
     """
 
-    def process_item(
-        self, item: dict, spider: object
-    ) -> dict:  # type: ignore[type-arg]
+    def process_item(self, item: dict, spider: object) -> dict:  # type: ignore[type-arg]
         """Process a scraped item.
 
         Args:

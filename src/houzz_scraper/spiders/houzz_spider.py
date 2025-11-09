@@ -6,7 +6,8 @@ numbers, websites, and email addresses.
 """
 
 import time
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 import scrapy
 from bs4 import BeautifulSoup
@@ -52,7 +53,7 @@ class HouzzSpider(scrapy.Spider):
             *args: Variable length argument list passed to parent class.
             **kwargs: Arbitrary keyword arguments passed to parent class.
         """
-        super(HouzzSpider, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.start_time = time.time()
 
     def parse(self, response: Response) -> Iterator[scrapy.Request]:
