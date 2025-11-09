@@ -118,13 +118,28 @@ To modify the `start_urls` and `custom_settings` in the Houzz.com scraper:
 #### With uv:
 
 ```bash
+# Set PYTHONPATH to include the src directory
+export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}$(pwd)/src"
+
+# Run the spider
 uv run scrapy crawl houzz_scraper
 ```
 
 #### With pip:
 
 ```bash
+# Set PYTHONPATH to include the src directory
+export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}$(pwd)/src"
+
+# Run the spider
 scrapy crawl houzz_scraper
+```
+
+#### Using the convenience script:
+
+```bash
+# The script automatically sets PYTHONPATH
+./scripts/run_spider.sh
 ```
 
 The scraper will begin extracting information from Houzz.com business websites and store it in a CSV file (or your configured output format).
