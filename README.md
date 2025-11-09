@@ -65,82 +65,86 @@ The scraper extracts the following information from Houzz.com business listings:
 
 ## Usage
 
-To use the Houzz.com Scraper, follow these steps:
+The Houzz scraper can be configured in two ways:
 
-### Configuring the Spider
+### Option 1: Command-Line Arguments (Recommended)
 
-To modify the `start_urls` and `custom_settings` in the Houzz.com scraper:
-
-#### Changing `start_urls`:
-
-1. Open the `src/houzz_scraper/spiders/houzz_spider.py` file in your project directory.
-
-2. Locate the `start_urls` variable, which is defined as a list of URLs. You can change the URL to the one you want to scrape.
-
-3. Replace the existing URL with the new URL you want to scrape (the URL should be a Houzz professional listing page). For example:
-
-   ```python
-   start_urls = ["https://www.houzz.com/professionals/interior-designer/your-location-here"]
-   ```
-
-#### Changing `custom_settings`:
-
-1. In the same `src/houzz_scraper/spiders/houzz_spider.py` file, find the `custom_settings` dictionary.
-
-2. Within the `custom_settings` dictionary, you can customize various settings related to the scraper's behavior:
-
-   - To change the output file format to JSON:
-
-     ```python
-     'FEEDS': {
-         'output.json': {
-             'format': 'json',
-             'overwrite': True,  # Set to True to overwrite the file if it already exists
-         },
-     }
-     ```
-
-   - To set the scraper to append data to the existing file instead of overwriting:
-
-     ```python
-     'FEEDS': {
-         'output.csv': {
-             'format': 'csv',
-             'overwrite': False,  # Set to False to append data to the existing file
-         },
-     }
-     ```
-
-3. Save the file with your changes.
-
-### Running the Scraper
-
-#### With uv:
+Run the spider with command-line arguments to specify the starting URL and output options:
 
 ```bash
 # Set PYTHONPATH to include the src directory
 export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}$(pwd)/src"
 
-# Run the spider
-uv run scrapy crawl houzz_scraper
+# Basic usage - scrape a URL and save to default output.csv
+scrapy crawl houzz_scraper -a url="https://www.houzz.com/professionals/interior-designer/your-location"
+
+# Customize output file and format
+scrapy crawl houzz_scraper \
+  -a url="https://www.houzz.com/professionals/..." \
+  -a output="results.json" \
+  -a format="json"
+
+# Control file overwrite behavior
+scrapy crawl houzz_scraper \
+  -a url="https://www.houzz.com/professionals/..." \
+  -a output="data.csv" \
+  -a overwrite="false"
 ```
 
-#### With pip:
+**Command-line arguments:**
+- `url` (required): Starting URL to scrape
+- `output` (optional): Output file path (default: `output.csv`)
+- `format` (optional): Output format - `csv` or `json` (default: `csv`)
+- `overwrite` (optional): Overwrite existing file - `true` or `false` (default: `true`)
+
+### Option 2: Configuration File
+
+Create a `scraper.conf` file in your project directory:
 
 ```bash
-# Set PYTHONPATH to include the src directory
-export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}$(pwd)/src"
+# Copy the example configuration file
+cp scraper.conf.example scraper.conf
 
-# Run the spider
+# Edit the configuration file with your settings
+nano scraper.conf
+```
+
+Example `scraper.conf`:
+
+```ini
+[DEFAULT]
+start_url = https://www.houzz.com/professionals/interior-designer/your-location
+output_file = output.csv
+output_format = csv
+overwrite = true
+```
+
+Then run the spider without arguments:
+
+```bash
+export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}$(pwd)/src"
 scrapy crawl houzz_scraper
 ```
 
-#### Using the convenience script:
+**Note:** Command-line arguments override configuration file settings.
+
+### Option 3: Using the Convenience Script
+
+The `run_spider.sh` script simplifies running the scraper:
 
 ```bash
-# The script automatically sets PYTHONPATH
-./scripts/run_spider.sh
+# Basic usage
+./scripts/run_spider.sh "https://www.houzz.com/professionals/..."
+
+# With all options
+./scripts/run_spider.sh "https://www.houzz.com/..." "results.json" "json" "false"
 ```
+
+Script arguments (in order):
+1. Starting URL (required)
+2. Output file (optional, default: `output.csv`)
+3. Output format (optional, default: `csv`)
+4. Overwrite flag (optional, default: `true`)
 
 The scraper will begin extracting information from Houzz.com business websites and store it in a CSV file (or your configured output format).
 

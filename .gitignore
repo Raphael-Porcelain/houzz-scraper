@@ -59,6 +59,9 @@ dmypy.json
 output.csv
 output.json
 
+# Configuration files (user-specific)
+scraper.conf
+
 # Environment variables
 .env
 .env.local
