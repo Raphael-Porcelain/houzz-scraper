@@ -1,0 +1,19 @@
+# Houzz Scraper Configuration File
+# 
+# This file can be used to configure the spider instead of using command-line arguments.
+# To use this file, copy it to your working directory and customize the values.
+#
+# Usage: scrapy crawl houzz_scraper (reads from scrapy.cfg or settings)
+
+# Starting URL for scraping (required)
+# Example: https://www.houzz.com/professionals/interior-designer/carter-lake-ia-us-probr0-bo~t_11785~r_4850531
+start_url = https://www.houzz.com/professionals/interior-designer/carter-lake-ia-us-probr0-bo~t_11785~r_4850531
+
+# Output file path
+output_file = output.csv
+
+# Output format (csv or json)
+output_format = csv
+
+# Overwrite existing file (true or false)
+overwrite = true

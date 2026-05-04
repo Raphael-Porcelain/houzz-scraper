@@ -6,110 +6,193 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Output](#output)
+- [Development](#development)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Introduction
 
-Welcome to the **Web Scraping with Python: Houzz.com Scraper** project. This repository contains a Python web scraping script that extracts data from business websites on [www.houzz.com](https://www.houzz.com). The scraper is built on Scrapy and BeautifulSoup and is designed to collect information from business sites on Houzz.com, allowing you to store the data in a CSV file for further analysis or usage.
+Welcome to the **Web Scraping with Python: Houzz.com Scraper** project. This repository contains a Python web scraping tool that extracts data from business websites on [www.houzz.com](https://www.houzz.com). The scraper is built on Scrapy and BeautifulSoup and is designed to collect information from business sites on Houzz.com, allowing you to store the data in a CSV file for further analysis or usage.
 
 ![Houzz.com](https://github.com/adil6572/houzz-scraper/blob/main/Houzz.png)
 
 ## Output
 
-- **Business Name**: The name of the business.
-- **Location**: The location of the business.
-- **Phone Number**: The contact phone number of the business.
-- **Website URL**: The website URL of the business.
-- **Email**: If emails available on website
+The scraper extracts the following information from Houzz.com business listings:
+
+- **Business Name**: The name of the business
+- **Location**: The location of the business
+- **Phone Number**: The contact phone number of the business
+- **Website URL**: The website URL of the business
+- **Email**: Email addresses found on the business website (if available)
 
 ## Installation
 
-Follow these steps to get started with the Houzz.com Scraper:
-
 ### Prerequisites
 
-- Python 3.x
-- Pip (Python Package Installer)
+- Python 3.11 or higher
+- [uv](https://github.com/astral-sh/uv) package manager (recommended) or pip
 
-### Instructions
+### Using uv (Recommended)
 
-1. Clone this repository to your local machine using Git:
-
-   ```bash
-   git clone https://github.com/adil6572/houzz-scraper.git
-   ```
-
-2. Navigate to the project directory:
+1. Clone this repository to your local machine:
 
    ```bash
+   git clone https://github.com/Raphael-Porcelain/houzz-scraper.git
    cd houzz-scraper
    ```
 
-3. Install the required Python packages:
+2. Install dependencies using uv:
+
    ```bash
-   pip install scrapy beautifulsoup4
+   uv sync
+   ```
+
+### Using pip
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/Raphael-Porcelain/houzz-scraper.git
+   cd houzz-scraper
+   ```
+
+2. Install the required Python packages:
+
+   ```bash
+   pip install scrapy beautifulsoup4 requests
    ```
 
 ## Usage
 
-To use the Houzz.com Scraper, follow these steps:
+The Houzz scraper can be configured in two ways:
 
-To modify the `start_urls` and `custom_settings` in the Houzz.com scraper, follow these instructions:
+### Option 1: Command-Line Arguments (Recommended)
 
-### Changing `start_urls`:
+Run the spider with command-line arguments to specify the starting URL and output options:
 
-1. Open the `houzz_scraper/spiders/houzz_spider.py` file in your project directory.
+```bash
+# Set PYTHONPATH to include the src directory
+export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}$(pwd)/src"
 
-2. Locate the `start_urls` variable, which is defined as a list of URLs. You can change the URL to the one you want to scrape.
+# Basic usage - scrape a URL and save to default output.csv
+scrapy crawl houzz_scraper -a url="https://www.houzz.com/professionals/interior-designer/your-location"
 
-3. Replace the existing URL with the new URL you want to scrape (The URL should be similar to Example URL). For example:
+# Customize output file and format
+scrapy crawl houzz_scraper \
+  -a url="https://www.houzz.com/professionals/..." \
+  -a output="results.json" \
+  -a format="json"
 
-   ```python
-   start_urls = ["https://www.houzz.com/professionals/interior-designer/carter-lake-ia-us-probr0-bo~t_11785~r_4850531"]
-   ```
+# Control file overwrite behavior
+scrapy crawl houzz_scraper \
+  -a url="https://www.houzz.com/professionals/..." \
+  -a output="data.csv" \
+  -a overwrite="false"
+```
 
-### Changing `custom_settings`:
+**Command-line arguments:**
+- `url` (required): Starting URL to scrape
+- `output` (optional): Output file path (default: `output.csv`)
+- `format` (optional): Output format - `csv` or `json` (default: `csv`)
+- `overwrite` (optional): Overwrite existing file - `true` or `false` (default: `true`)
 
-1. In the same `houzz_scraper/spiders/houzz_spider.py` file, find the `custom_settings` dictionary.
+### Option 2: Configuration File
 
-2. Within the `custom_settings` dictionary, you can customize various settings related to the scraper's behavior. To change the output file format and overwrite behavior, modify the values accordingly.
+Create a `scraper.conf` file in your project directory:
 
-   - To change the output file format to JSON:
+```bash
+# Copy the example configuration file
+cp scraper.conf.example scraper.conf
 
-     ```python
-     'FEEDS': {
-         'output.json': {
-             'format': 'json',
-             'overwrite': True,  # Set to True to overwrite the file if it already exists
-         },
-     }
-     ```
+# Edit the configuration file with your settings
+nano scraper.conf
+```
 
-   - To set the scraper to append data to the existing file instead of overwriting:
+Example `scraper.conf`:
 
-     ```python
-     'FEEDS': {
-         'output.csv': {
-             'format': 'csv',
-             'overwrite': False,  # Set to False to append data to the existing file
-         },
-     }
-     ```
+```ini
+[DEFAULT]
+start_url = https://www.houzz.com/professionals/interior-designer/your-location
+output_file = output.csv
+output_format = csv
+overwrite = true
+```
 
-3. Save the `houzz_scraper/spiders/houzz_spider.py` file with your changes.
+Then run the spider without arguments:
 
-Now, your scraper will start with the modified `start_urls` and follow the settings you've configured in the `custom_settings` dictionary.
+```bash
+export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}$(pwd)/src"
+scrapy crawl houzz_scraper
+```
 
-4. Start the scraper using the following command:
+**Note:** Command-line arguments override configuration file settings.
 
-   ```bash
-   scrapy crawl houzz_scraper
-   ```
+### Option 3: Using the Convenience Script
 
-5. The scraper will begin extracting information from Houzz.com business websites and store it in a CSV file.
+The `run_spider.sh` script simplifies running the scraper:
+
+```bash
+# Basic usage
+./scripts/run_spider.sh "https://www.houzz.com/professionals/..."
+
+# With all options
+./scripts/run_spider.sh "https://www.houzz.com/..." "results.json" "json" "false"
+```
+
+Script arguments (in order):
+1. Starting URL (required)
+2. Output file (optional, default: `output.csv`)
+3. Output format (optional, default: `csv`)
+4. Overwrite flag (optional, default: `true`)
+
+The scraper will begin extracting information from Houzz.com business websites and store it in a CSV file (or your configured output format).
 
 You can now use this data for your intended purposes, such as analysis, data processing, or any other creative project.
+
+## Development
+
+### Setting Up Development Environment
+
+1. Install development dependencies:
+
+   ```bash
+   uv sync --group dev
+   ```
+
+2. Install pre-commit hooks:
+
+   ```bash
+   uv run pre-commit install --hook-type commit-msg --hook-type pre-push
+   ```
+
+### Code Quality
+
+Run linting and formatting:
+
+```bash
+# Check and fix linting issues
+uv run ruff check . --fix
+
+# Format code
+uv run ruff format .
+```
+
+### Testing
+
+Run tests with coverage:
+
+```bash
+uv run pytest --cov=src --cov-report=term-missing
+```
+
+### Type Checking
+
+Run type checking:
+
+```bash
+uv run mypy src
+```
 
 ## Contributing
 
@@ -119,15 +202,37 @@ If you'd like to contribute to this project, please follow these steps:
 
 2. Clone the forked repository to your local machine.
 
-3. Create a new branch with a descriptive name for your feature or bug fix.
+3. Create a new branch with a descriptive name for your feature or bug fix:
 
-4. Make your changes and commit them.
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
 
-5. Push your branch to your GitHub repository.
+4. Make your changes following the [contribution guidelines](CONTRIBUTING.md).
 
-6. Create a pull request to the main repository, explaining your changes and improvements.
+5. Ensure all tests pass and code is properly formatted:
 
-We welcome your contributions and ideas to make this project even better!
+   ```bash
+   uv run ruff check . --fix
+   uv run ruff format .
+   uv run pytest
+   ```
+
+6. Commit your changes using conventional commits:
+
+   ```bash
+   uv run cz commit
+   ```
+
+7. Push your branch to your GitHub repository:
+
+   ```bash
+   git push origin feat/your-feature-name
+   ```
+
+8. Create a pull request to the main repository, explaining your changes and improvements.
+
+We welcome your contributions and ideas to make this project even better! For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
